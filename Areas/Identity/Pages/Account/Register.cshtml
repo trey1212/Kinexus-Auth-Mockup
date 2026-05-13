@@ -1,0 +1,67 @@
+@page
+@model KinexusMockup.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = "/Areas/Identity/Pages/Shared/_AuthLayout.cshtml";
+}
+
+<section class="auth-page">
+    <div class="auth-card auth-card--register">
+        <div class="auth-card__media">
+            <img class="auth-card__brand" src="~/img/auth/logo_and_white_kinexus.png" alt="Kinexus" />
+        </div>
+
+        <div class="auth-card__panel auth-card__panel--register">
+            <div class="auth-panel__inner auth-panel__inner--register">
+                <h1 class="auth-title">Register</h1>
+
+                <div asp-validation-summary="ModelOnly" class="auth-validation" role="alert"></div>
+
+                <form id="registerForm" method="post" asp-route-returnUrl="@Model.ReturnUrl" class="auth-form auth-form--register">
+                    <div class="auth-grid">
+                        <div>
+                            <label asp-for="Input.FirstName" class="visually-hidden"></label>
+                            <input asp-for="Input.FirstName" class="form-control auth-input" autocomplete="given-name" placeholder="First name *" />
+                        </div>
+                        <div>
+                            <label asp-for="Input.LastName" class="visually-hidden"></label>
+                            <input asp-for="Input.LastName" class="form-control auth-input" autocomplete="family-name" placeholder="Last name" />
+                        </div>
+                    </div>
+
+                    <label asp-for="Input.Email" class="visually-hidden"></label>
+                    <input asp-for="Input.Email" class="form-control auth-input" autocomplete="username" aria-required="true" placeholder="Email *" />
+                    <span asp-validation-for="Input.Email" class="auth-field-error"></span>
+
+                    <label asp-for="Input.Password" class="visually-hidden"></label>
+                    <input asp-for="Input.Password" class="form-control auth-input" autocomplete="new-password" aria-required="true" placeholder="Password *" />
+                    <span asp-validation-for="Input.Password" class="auth-field-error"></span>
+
+                    <div class="auth-consent">
+                        <div class="form-check auth-consent__check">
+                            <input asp-for="Input.AgreeToTerms" class="form-check-input auth-checkbox" />
+                            <label asp-for="Input.AgreeToTerms" class="form-check-label auth-consent__label">
+                                I agree to the website's terms, privacy policy, and receiving emails from Kinexus.
+                            </label>
+                        </div>
+                        <p class="auth-consent__note">
+                            We respect your privacy. We will only email you about account activity and Kinexus updates, and
+                            you can unsubscribe from non-essential emails at any time.
+                        </p>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="btn auth-submit">Sign up</button>
+
+                    <p class="auth-switch-copy auth-switch-copy--align-end">
+                        Already a member?
+                        <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Sign in</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
