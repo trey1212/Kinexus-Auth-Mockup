@@ -1,0 +1,95 @@
+html.not-found-body,
+body.not-found-body {
+  min-height: 100%;
+}
+
+.not-found-body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(104, 84, 232, 0.28), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(73, 61, 168, 0.24), transparent 35%),
+    #06034f;
+  color: #ffffff;
+  font-family: "Montserrat", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.not-found-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.not-found-card {
+  width: min(100%, 46rem);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.not-found-logo {
+  display: block;
+  width: min(100%, 22rem);
+  height: auto;
+  margin: 0 auto 2rem;
+}
+
+.not-found-code {
+  margin: 0 0 1rem;
+  color: #ffffff;
+  font-size: clamp(4.5rem, 16vw, 8rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+}
+
+.not-found-copy {
+  max-width: 34rem;
+  margin: 0 auto;
+  color: #d9d3ff;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.not-found-actions {
+  margin-top: 2rem;
+}
+
+.not-found-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12rem;
+  min-height: 3.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: #5c4ee5;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0 1.75rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.not-found-button:hover,
+.not-found-button:focus {
+  background: #6a5df0;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 575.98px) {
+  .not-found-card {
+    padding: 2rem 0.5rem;
+  }
+
+  .not-found-logo {
+    width: min(100%, 16rem);
+    margin-bottom: 1.5rem;
+  }
+
+  .not-found-copy {
+    line-height: 1.6;
+  }
+}

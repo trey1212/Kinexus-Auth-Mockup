@@ -30,6 +30,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage");
 
 app.UseAuthorization();
 
@@ -42,5 +43,7 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
    .WithStaticAssets();
+
+app.MapFallbackToController("NotFoundPage", "Home");
 
 app.Run();

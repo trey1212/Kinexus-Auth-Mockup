@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Page Not Found";
+    Layout = "/Views/Shared/_NotFoundLayout.cshtml";
+}
+
+<section class="not-found-card">
+    <img class="not-found-logo" src="~/img/auth/logo_and_white_kinexus.png" alt="Kinexus" />
+    <h1 class="not-found-code">404</h1>
+    <p class="not-found-copy">
+        The page you were trying to reach does not exist or may have moved. Use the button below to go back and continue browsing.
+    </p>
+    <div class="not-found-actions">
+        <a class="not-found-button" asp-controller="Home" asp-action="Index">Go Back</a>
+    </div>
+</section>

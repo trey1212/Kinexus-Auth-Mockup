@@ -25,6 +25,11 @@ public class HomeController : Controller
     public IActionResult DrugProNet() => View();
     public IActionResult KinetAM() => View();
     public IActionResult Kinector() => View();
+    public IActionResult NotFoundPage()
+    {
+        Response.StatusCode = 404;
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
