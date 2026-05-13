@@ -4,18 +4,9 @@ using KinexusMockup.Models;
 
 namespace KinexusMockup.Controllers;
 
-public class HomeController : Controller
+[Route("[action]")]
+public class KnowledgebankController : Controller
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
     public IActionResult Kinatlas() => View();
     public IActionResult TranscriptoNet() => View();
     public IActionResult PhosphoNet() => View();
@@ -25,10 +16,4 @@ public class HomeController : Controller
     public IActionResult DrugProNet() => View();
     public IActionResult KinetAM() => View();
     public IActionResult Kinector() => View();
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-    }
 }

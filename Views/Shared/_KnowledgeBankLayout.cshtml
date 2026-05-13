@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - Kinexus</title>
+        <script type="importmap"></script>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/KinexusMockup.styles.css" asp-append-version="true" />
+    </head>
+    <body>
+        <header>
+            <!-- C# logic to dynamically change banner based on current page -->
+            @{
+                var bannerPath = ViewData["Banner"]?.ToString() ?? "/img/default-banner.jpg";
+                var currentPage = ViewContext.RouteData.Values["Action"]?.ToString();
+
+                var navLinks = new Dictionary<string, (string Controller, string Text)>
+                {
+                    { "Index", ("Home", "Home") },
+
+                    { "Kinatlas", ("Knowledgebank", "KinAtlas") },
+                    { "TranscriptoNet", ("Knowledgebank", "TranscriptoNET") },
+                    { "PhosphoNet", ("Knowledgebank", "PhosphoNET") },
+                    { "OncoNet", ("Knowledgebank", "OncoNeET") },
+                    { "KinaseNet", ("Knowledgebank", "KinaseNET") },
+                    { "DrugKinet", ("Knowledgebank", "DrugKiNET") },
+                    { "DrugProNet", ("Knowledgebank", "DrugProNet") },
+                    { "KinetAM", ("Knowledgebank", "KiNET-AM") },
+                    { "Kinector", ("Knowledgebank", "KiNECTOR") }
+                };
+            }
+
+            <div class="banner" style="background-image: url('@bannerPath');"></div>
+
+            <!-- Dynamically change navigation links based on current page -->
+            <nav class="dynamic-navbar">
+                <ul>
+                    @foreach (var link in navLinks)
+                    {
+                        if (link.Key != currentPage)
+                        {
+                            <li>
+                                <a asp-controller="@link.Value.Controller" asp-action="@link.Key">
+                                    @link.Value.Text
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
+        </header>
+
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </body>
+</html>
