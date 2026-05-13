@@ -58,7 +58,7 @@ public class RegisterModel : PageModel
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
-        public bool AgreeToTerms { get; set; }
+        public bool AgreeToTerms { get; set; } = true;
     }
 
     public async Task OnGetAsync(string? returnUrl = null)
