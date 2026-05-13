@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Admin Access";
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<section class="admin-login-page">
+    <div class="admin-login-card">
+        <div class="admin-login-card__media">
+            <img class="admin-brand" src="~/img/auth/logo_and_white_kinexus.png" alt="Kinexus" />
+        </div>
+
+        <div class="admin-login-card__panel">
+            <div class="admin-login-card__inner">
+                <span class="admin-eyebrow">Admin</span>
+                <h1 class="admin-title">Admin Access</h1>
+                <p class="admin-copy">
+                    Enter the admin credentials to access the Kinexus newsletter and user management dashboard.
+                </p>
+                <p class="admin-note">
+                    UI only: the final implementation can read these credentials from environment configuration.
+                </p>
+
+                <form asp-controller="Admin" asp-action="Dashboard" method="get" class="admin-form">
+                    <div>
+                        <label class="visually-hidden" for="admin-username">Username</label>
+                        <input id="admin-username" class="form-control admin-input" type="text" placeholder="Admin username" />
+                    </div>
+
+                    <div>
+                        <label class="visually-hidden" for="admin-password">Password</label>
+                        <input id="admin-password" class="form-control admin-input" type="password" placeholder="Password" />
+                    </div>
+
+                    <button type="submit" class="btn admin-button">Enter Dashboard</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
