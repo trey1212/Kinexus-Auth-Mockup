@@ -1,12 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    @model HomeViewModel;
 }
 
 <section class="hero">
-    <div class="hero-content">
-        <h1>Welcome To the Kinexus Bioinformatics Corporation website</h1>
-        <p>Since 1999, we have continued to offer innovative services and products...</p>
-    </div>
+    @await Component.InvokeAsync("Home")
+
     <div class="hero-subscribe">
         <h3>Subscribe to our mailing list.</h3>
         <form>
