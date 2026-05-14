@@ -1,14 +1,23 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using KinexusMockup.Services;
 using KinexusMockup.Models;
 
 namespace KinexusMockup.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly HomeContentService _contentService;
+
+    public HomeController(HomeContentService contentService)
+    {
+        _contentService = contentService;
+    }
+
     public IActionResult Index()
     {
-        return View();
+        var model = _contentService.GetHomeContent();
+        return View(model);
     }
 
     public IActionResult Privacy()

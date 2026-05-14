@@ -1,11 +1,10 @@
-﻿@{
+﻿@model HomeViewModel;
+@{
     ViewData["Title"] = "Home Page";
-    @model HomeViewModel;
 }
 
 <section class="hero">
-    @await Component.InvokeAsync("Home")
-
+    <p>@Model.WelcomeMessage</p>
     <div class="hero-subscribe">
         <h3>Subscribe to our mailing list.</h3>
         <form>
