@@ -18,6 +18,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.7" />
+
+    <!-- OpenIddict: turns Kinexus into the OAuth2 / OpenID Connect authorization server
+         for the ecosystem. Core is the shared abstractions, Server hosts the OIDC endpoints,
+         and EntityFrameworkCore persists clients, authorizations, scopes, and tokens to SQLite. -->
+    <PackageReference Include="OpenIddict.AspNetCore" Version="6.0.0" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
