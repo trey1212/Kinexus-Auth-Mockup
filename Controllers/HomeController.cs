@@ -34,6 +34,7 @@ public class HomeController : Controller
     public IActionResult DrugProNet() => View();
     public IActionResult KinetAM() => View();
     public IActionResult Kinector() => View();
+    public IActionResult Login() => View();
     public IActionResult NotFoundPage()
     {
         Response.StatusCode = 404;

@@ -33,11 +33,15 @@
 <section class="knowledgebank">
     <h2 class="signet-title">SigNET Knowledgebank</h2>
     <p>@Model.SignetMessage</p>
-    <div class="database-grid">
-        <div class="db-card">
-            <h3>PhosphoNET</h3>
-            <p>The world's largest repository of information on over 950,000 known and predicted human phosphorylation sites...</p>
-            <a href="#" class="link-discover">Discover</a>
-        </div>
+
+    <div class="knowledgebank-grid">
+        @foreach (var db in Model.Knowledgebanks)
+        {
+            <div class="db-card">
+                <h3>@db.Title</h3>
+                <p>@db.Description</p>
+                <a href="@db.LinkUrl" class="link-discover">Discover</a>
+            </div>
+        }
     </div>
 </section>

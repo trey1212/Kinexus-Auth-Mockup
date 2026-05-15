@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "I+gXQZxzldk=",
+  "dgSpecHash": "9plIA00rMn0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\rjtar\\Documents\\BCIT\\Term 3\\Comp 3800 - Practicum\\Kinexus\\Kinexus-Auth-Mockup\\KinexusMockup.csproj",
+  "projectFilePath": "C:\\Users\\rjtar\\Documents\\SCHOOL DOCS\\BCIT\\Comp 3800\\Kinexus Mockup\\Kinexus-Auth-Mockup\\KinexusMockup.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rjtar\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\rjtar\\.nuget\\packages\\microsoft.aspnetcore.diagnostics.entityframeworkcore\\10.0.7\\microsoft.aspnetcore.diagnostics.entityframeworkcore.10.0.7.nupkg.sha512",
