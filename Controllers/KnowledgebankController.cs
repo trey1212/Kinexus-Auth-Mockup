@@ -16,4 +16,5 @@ public class KnowledgebankController : Controller
     public IActionResult DrugProNet() => View();
     public IActionResult KinetAM() => View();
     public IActionResult Kinector() => View();
+    public IActionResult Signet() => View();
 }

@@ -44,38 +44,38 @@
     text-decoration: none !important;
 }
 
-/* Sub navbar styling */
+/* Sub-navbar styling */
 .sub-navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     font-size: 15px;
     font-weight: bold;
-    padding: 13px 20px 13px 0px;
+    padding: 13px 20px 13px 20px;
     border: solid 1px #6d4891;
 }
 
-.sub-navbar ul {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    list-style-type: none;
-    gap: 5px;
-    margin: 0;
-    padding: 0;
+::deep .sub-navbar a {
+    text-decoration: none;
+    color: #ffbc0d;
 }
 
-::deep .sub-navbar li:not(:last-child)::after {
+::deep .sub-navbar a:hover {
+    text-decoration: none;
+    color: #77529F;
+}
+
+::deep .sub-navbar .extra-links a {
+    color: #2baf4f;
+}
+
+::deep .sub-navbar .main-links a:not(:last-child)::after {
     content: "|";
     color: #ffbc0d;
-    margin-left: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
     font-weight: normal;
-    cursor: default; 
+    cursor: default;
+    display: inline-block;
 }
 
-::deep .sub-navbar ul li a {
-    text-decoration: none;
-    color: #ffbc0d;
-}
-
-::deep .sub-navbar ul li a:hover {
-    text-decoration: none;
-    color: #77529F
-}

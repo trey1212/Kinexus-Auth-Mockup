@@ -3,3 +3,96 @@
     ViewData["Title"] = "SigNET";
     ViewData["Banner"] = "/img/signet-banner.jpg";
 }
+
+@section ExtraLinks{
+    <a asp-area="Identity" asp-page="/Account/Login">Login</a>
+}
+
+<div class="signet-container">
+    <div class="auth-section">
+        <button id="scrollToTop" title="Scroll to top">Home | Top</button>
+    </div>
+
+    <div class="info-section">
+        <div class="welcome-section">
+            <div class="welcome-top">
+                <div class="welcome-intro">
+                    <h1>Welcome</h1>
+                    <p>TO THE KINEXUS KNOWLEDGEBANK WEBSITE</p>
+                    <p>Access is free, but Registration is required.</p>
+                </div>
+
+                <div class="welcome-register">
+                    <a asp-area="Identity" asp-page="/Account/Register">REGISTER HERE</a>
+                    <h1>...and start exploring</h1>
+                </div>
+            </div>
+
+            <img class="signet-hero" src="/img/signet-hero.jpg" alt="Signet Hero">
+        </div>
+
+        <p class="signet-description">
+            <span class="highlight">SigNET</span> is an open-access, online resources 
+            produced by Kinexus with the aid of students from the University of British 
+            Columbia and the British Columbia Institute of Technology to promote cell 
+            signalling research by academic and industrial scientists. 
+            
+            <span class="highlight">TranscriptoNET</span> provides gene expression data 
+            on over 21,000 human genes in over 600 diverse human cell lines, organs 
+            and tissues. 
+            
+            <span class="highlight">KinaseNET</span> offers detailed information about 
+            536 human protein kinases, whereas <span class="highlight">OncoNET</span> 
+            provides expression and mutation data for 3000 cancer-related proteins in 
+            diverse human tissues and cell lines. 
+            
+            <span class="highlight">PhosphoNET</span> features data on nearly 1 million 
+            confirmed or predicted phosphorylation sites in over 21,000 human proteins, 
+            including known and predicted kinases and phosphatases that target these 
+            phosphosites, and the evolutionary conservation of these phosphosites in 
+            over 20 other species. 
+            
+            <span class="highlight">KinATLAS</span> reveals interactions between these 
+            proteins with each other in signalling systems as well as interactions with 
+            kinase inhibitory compounds. 
+            
+            <span class="highlight">KiNECTOR</span> provides direct and indirect maps of 
+            over 22,000 human kinase-substrate relationships (KSRs) in kinase-based cell 
+            signalling pathways. It also features interactions between receptors and their 
+            extracellular mediators and interior signal transducing proteins, and their 
+            human tissue expression patterns. 
+            
+            <span class="highlight">DrugKiNET</span> holds comprehensive information on 
+            over 800 compounds that have been experimentally determined to inhibit human 
+            protein kinases. This includes the retrieval of the lowest reported compound 
+            IC50, Ki and Kd values from several reputable sources for over 105,000 
+            experimentally tested, non-redundant kinase-compound pairs. Using this 
+            information for training, two kinase inhibitor prediction algorithms were 
+            developed to further predict another 200,000 possible kinase-compound 
+            interactions. 
+            
+            <span class="highlight">DrugProNET</span> provides identification of the 
+            critical amino acids in drug targets for binding of over 800 drugs. 
+            
+            <span class="highlight">KiNET-AM</span> features over 2000 antibody microarray 
+            analyses with over 2,000 diverse biological specimens with 1,700 diverse pan- 
+            and phosphosite-specific antibodies. Most of these antibodies are available 
+            from Kinexus for screening lysates from cells and tissues using our Kinex™ 
+            KAM antibody microarrays or as stand-alone products at our 
+            <a href="https://kinexus-ca.myshopify.com/">https://kinexus-ca.myshopify.com/</a> 
+            website.
+        </p>
+    </div>
+</div>
+
+<!-- Script to make Home | Top button to scroll to top -->
+<script>
+    let topButton = document.getElementById("scrollToTop");
+
+    topButton.addEventListener("click", function() {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+</script>
