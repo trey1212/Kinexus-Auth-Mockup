@@ -1,4 +1,7 @@
+using KinexusMockup.Models;
 using Microsoft.AspNetCore.Mvc;
+
+namespace KinexusMockup.ViewComponents;
 
 public class HomeViewComponent : ViewComponent
 {

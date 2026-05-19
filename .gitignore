@@ -480,3 +480,23 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# ─── Kinexus project-specific ──────────────────────────────────────────
+# SQLite database + its Write-Ahead-Log siblings. The DB is recreated
+# from EF migrations on first run (see OpenIddictClientSeeder), so
+# checking it in would only sync local accounts + runtime state across
+# the team — which we don't want. Each dev gets their own app.db.
+*.db
+*.db-shm
+*.db-wal
+
+# Per-developer config overrides. Anything in appsettings.json is
+# committed (teammates need it to run the app); anything personal
+# (real secrets, machine-specific ports, etc.) goes in this file
+# instead and stays out of git. ASP.NET Core merges it on top of
+# appsettings.json automatically.
+appsettings.Local.json
+
+# Just in case anyone runs `dotnet user-secrets` outside the standard
+# %APPDATA% location and accidentally drops a file in the project.
+secrets.json
