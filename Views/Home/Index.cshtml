@@ -1,11 +1,14 @@
-﻿@{
+﻿@model HomeViewModel;
+@{
     ViewData["Title"] = "Home Page";
-    @model HomeViewModel;
 }
 
 <section class="hero">
-    @await Component.InvokeAsync("Home")
-
+    <div class="hero-content">
+        <h1>Welcome</h1>
+        <p>@Model.WelcomeMessage</p>
+    </div>
+    
     <div class="hero-subscribe">
         <h3>Subscribe to our mailing list.</h3>
         <form>
@@ -19,6 +22,7 @@
 </section>
 
 <section class="services-grid">
+    <h2>Some of the ways that Kinexus can promote your research with our integrated discovery platform.</h2>
     <div class="card">
         <h2>Stock and Custom Antibodies</h2>
         <p>Choose from our inventory of over 1,600 pan- and phosphosite-specific antibodies...</p>
@@ -27,13 +31,17 @@
 </section>
 
 <section class="knowledgebank">
-    <h2>SigNET KnowledgeBank</h2>
-    <p>Kinexus is pleased to develop and maintain these open-access knowledgebases...</p>
-    <div class="database-grid">
-        <div class="db-card">
-            <h3>PhosphoNET</h3>
-            <p>The world's largest repository of information on over 950,000 known and predicted human phosphorylation sites...</p>
-            <a href="#" class="link-discover">Discover</a>
-        </div>
+    <h2 class="signet-title">SigNET Knowledgebank</h2>
+    <p>@Model.SignetMessage</p>
+
+    <div class="knowledgebank-grid">
+        @foreach (var db in Model.Knowledgebanks)
+        {
+            <div class="db-card">
+                <h3>@db.Title</h3>
+                <p>@db.Description</p>
+                <a href="@db.LinkUrl" class="link-discover">Discover</a>
+            </div>
+        }
     </div>
 </section>

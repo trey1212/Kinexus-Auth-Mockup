@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using KinexusMockup.Services;
 using KinexusMockup.Models;
 
 namespace KinexusMockup.Controllers;
@@ -10,10 +11,31 @@ namespace KinexusMockup.Controllers;
 // without authentication and silently bypass the SSO surface.
 public class HomeController : Controller
 {
-    public IActionResult Index() => View();
+    private readonly HomeContentService _contentService;
+
+    public HomeController(HomeContentService contentService)
+    {
+        _contentService = contentService;
+    }
+
+    public IActionResult Index()
+    {
+        var model = _contentService.GetHomeContent();
+        return View(model);
+    }
 
     public IActionResult Privacy() => View();
 
+    public IActionResult Kinatlas() => View();
+    public IActionResult TranscriptoNet() => View();
+    public IActionResult PhosphoNet() => View();
+    public IActionResult OncoNet() => View();
+    public IActionResult KinaseNet() => View();
+    public IActionResult DrugKinet() => View();
+    public IActionResult DrugProNet() => View();
+    public IActionResult KinetAM() => View();
+    public IActionResult Kinector() => View();
+    public IActionResult Login() => View();
     public IActionResult NotFoundPage()
     {
         Response.StatusCode = 404;

@@ -34,6 +34,7 @@
 
                     var navLinks = new Dictionary<string, (string Controller, string Text)>
                     {
+                        { "Signet", ("Knowledgebank", "SigNET") },
                         { "Kinatlas", ("Knowledgebank", "KinAtlas") },
                         { "TranscriptoNet", ("Knowledgebank", "TranscriptoNET") },
                         { "PhosphoNet", ("Knowledgebank", "PhosphoNET") },
@@ -66,12 +67,18 @@
                 </nav>
 
                 <div class="sub-navbar">
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a asp-controller="Home" asp-action="Index">Kinexus</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Credits</a></li>
-                    </ul>
+
+                    <div class="extra-links">
+                        @await RenderSectionAsync("ExtraLinks", required: false)
+                    </div>
+
+                    <div class="main-links">
+                        <a href="#">Home</a>
+                        <a asp-controller="Home" asp-action="Index">Kinexus</a>
+                        <a href="#">Contact</a>
+                        <a href="#">Credits</a>
+                    </div>
+
                 </div>
             </header>
 

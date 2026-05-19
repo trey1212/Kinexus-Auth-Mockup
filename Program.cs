@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using KinexusMockup.Auth;
 using KinexusMockup.Data;
+using KinexusMockup.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddKinexusSsoServer(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<HomeContentService>();
 
 var app = builder.Build();
 

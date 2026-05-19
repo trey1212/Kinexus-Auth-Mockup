@@ -20,15 +20,22 @@ body {
     font-family: "Montserrat";
     line-height: 1.5;
     color: var(--color-gray-900);
-    background-color: #ffffff;
+    background-color: #000031;
     -webkit-font-smoothing: antialiased;
 }
 
 /* Typography */
 h1, h2, h3 {
     font-weight: 700;
-    color: var(--color-gray-900);
+    color: #ffab15;
     margin-bottom: 1rem;
+}
+
+h2.signet-title {
+    color: white;
+    font-size: 3rem;
+    border-top: solid 12px #3f3990;
+    border-bottom: solid 12px #3f3990;
 }
 
 p {
@@ -56,6 +63,7 @@ a {
     padding: 1.25rem 2rem;
     background-color: #000030;
     gap: 3em;
+    position: relative;
 }
 
 .logo {
@@ -83,6 +91,32 @@ a {
         .main-nav a:hover {
             color: rgba(152 204 254);
             text-decoration: none;
+        }
+
+.auth-nav {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-left: 300px;
+    position: absolute;
+    right: 3rem;
+}
+
+    .auth-nav a {
+        color: #c6ccd3;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+        .auth-nav a:hover {
+            color: rgba(152 204 254);
+            text-decoration: none;
+        }
+
+        .sign-up {
+            background-color: #472e92;
+            padding: 5px 10px 5px 10px;
+            border-radius: 25px;
         }
 
 .search-toggle {
@@ -173,9 +207,9 @@ a {
         display: block;
     }
 
-/* Grids for Services and Databases */
+/* Grids for Services and knowledgebanks */
 .services-grid,
-.database-grid {
+.knowledgebank-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 2rem;
@@ -246,7 +280,7 @@ a {
         margin: 0 auto 2rem auto;
     }
 
-    .knowledgebank .database-grid {
+    .knowledgebank .knowledgebank-grid {
         text-align: left;
         padding: 0;
     }
