@@ -1,8 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using KinexusMockup.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KinexusMockup.Controllers;
 
+[Authorize]
+[Route("[action]")]
 public class AdminController : Controller
 {
     private static readonly IReadOnlyList<AdminMockUser> MockUsers =

@@ -1,9 +1,12 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using KinexusMockup.Models;
 
 namespace KinexusMockup.Controllers;
 
+// [Authorize] on the whole controller means EVERY action below requires
+// a logged-in user. If someone hits any of these URLs without being signed
+// in, they'll be sent to the login page first and bounced back after.
+[Authorize]
 [Route("[action]")]
 public class KnowledgebankController : Controller
 {

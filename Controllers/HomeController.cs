@@ -5,6 +5,10 @@ using KinexusMockup.Models;
 
 namespace KinexusMockup.Controllers;
 
+// Public pages only. Anything that should require a login (the Knowledgebank
+// mockups) lives in KnowledgebankController, which has [Authorize] on it.
+// Don't add knowledge-bank actions here — doing so would expose those pages
+// without authentication and silently bypass the SSO surface.
 public class HomeController : Controller
 {
     private readonly HomeContentService _contentService;
@@ -20,10 +24,7 @@ public class HomeController : Controller
         return View(model);
     }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+    public IActionResult Privacy() => View();
 
     public IActionResult Kinatlas() => View();
     public IActionResult TranscriptoNet() => View();
