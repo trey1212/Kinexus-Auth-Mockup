@@ -1,9 +1,16 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using KinexusMockup.Auth;
 using KinexusMockup.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Per-developer overrides for secrets and machine-specific values.
+// appsettings.Local.json is gitignored; teammates copy appsettings.Local.example.json,
+// rename it, and fill in real values. In production, the same keys are supplied
+// as Azure App Service Application Settings (env vars with __ in place of :).
+builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -17,6 +24,11 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
 
 builder.Services.AddKinexusSsoServer(builder.Configuration);
 
@@ -34,7 +46,8 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Intentionally off: SSO clients may be deployed over HTTP. Re-enable once all clients are HTTPS-only.
+// app.UseHttpsRedirection();
 app.UseRouting();
 app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage");
 

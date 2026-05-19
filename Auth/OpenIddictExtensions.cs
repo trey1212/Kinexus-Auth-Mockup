@@ -70,6 +70,7 @@ public static class OpenIddictExtensions
                        .AddDevelopmentSigningCertificate();
 
                 options.UseAspNetCore()
+                       .DisableTransportSecurityRequirement()
                        .EnableAuthorizationEndpointPassthrough()
                        .EnableTokenEndpointPassthrough()
                        .EnableEndSessionEndpointPassthrough()
