@@ -2,7 +2,7 @@
   "version": 2,
   "dgSpecHash": "M8SdGk4Trb8=",
   "success": true,
-  "projectFilePath": "C:\\Users\\rassb\\source\\repos\\Kinexus-Auth-Mockup\\KinexusMockup.csproj",
+  "projectFilePath": "C:\\Users\\lgrs1\\source\\repos\\Kinexus-Auth-Mockup\\KinexusMockup.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\rassb\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\rassb\\.nuget\\packages\\microsoft.aspnetcore.diagnostics.entityframeworkcore\\10.0.7\\microsoft.aspnetcore.diagnostics.entityframeworkcore.10.0.7.nupkg.sha512",

@@ -4,6 +4,7 @@ using KinexusMockup.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using KinexusMockup.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +30,10 @@ builder.Services.AddKinexusSsoServer(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 
-//Using dummy email sender remove later with proper one.
-builder.Services.AddSingleton<IEmailSender, DummyEmailSender>();
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddTransient<IEmailService, SmtpEmailService>();
 
 var app = builder.Build();
 
