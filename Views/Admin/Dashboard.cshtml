@@ -27,15 +27,27 @@
 
     @if (TempData["AdminMessage"] is string adminMessage)
     {
-        <div class="alert alert-success">
-            @adminMessage
+        <div class="alert alert-success alert-dismissible fade show shadow"
+             role="alert"
+             style="position: fixed; top: 1rem; right: 1rem; z-index: 2000; max-width: 420px;">
+            <strong>Success:</strong> @adminMessage
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
         </div>
     }
 
     @if (TempData["AdminError"] is string adminError)
     {
-        <div class="alert alert-danger">
-            @adminError
+        <div class="alert alert-danger alert-dismissible fade show shadow"
+             role="alert"
+             style="position: fixed; top: 1rem; right: 1rem; z-index: 2000; max-width: 420px;">
+            <strong>Error:</strong> @adminError
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"></button>
         </div>
     }
 

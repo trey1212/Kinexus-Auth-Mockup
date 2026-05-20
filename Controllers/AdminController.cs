@@ -131,9 +131,11 @@ public class AdminController : Controller
 
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors);
+            TempData["AdminError"] = "User could not be added.";
+            return RedirectToAction("Dashboard");
         }
 
+        TempData["AdminMessage"] = $"User {email} was added successfully.";
         return RedirectToAction("Dashboard");
     }
 
@@ -148,10 +150,22 @@ public class AdminController : Controller
         var user = await _userManager.FindByIdAsync(id);
 
         if (user == null)
+        {
+            TempData["AdminError"] = "User could not be found.";
             return NotFound();
+        }
+
+        var email = user.Email;
 
         var result = await _userManager.DeleteAsync(user);
 
+        if (!result.Succeeded)
+        {
+            TempData["AdminError"] = "User could not be deleted.";
+            return RedirectToAction("Dashboard");
+        }
+
+        TempData["AdminMessage"] = $"User {email} was deleted successfully.";
         return RedirectToAction("Dashboard");
     }
 
@@ -168,27 +182,27 @@ public class AdminController : Controller
     {
         if (!ModelState.IsValid)
         {
-            TempData["AdminError"] = "Email could not be sent. Please check the subject and message.";
+            TempData["AdminError"] = "Email could not be sent.";
             return RedirectToAction("Dashboard");
         }
 
-        var user = _userManager.Users.FirstOrDefault(x => x.Id.Equals(model.UserId));
+        var user = await _userManager.FindByIdAsync(model.UserId);
 
-        if (user == null)
+        if (user == null || string.IsNullOrWhiteSpace(user.Email))
         {
-            TempData["AdminError"] = "User could not be found.";
+            TempData["AdminError"] = "User could not be found or does not have an email address.";
             return RedirectToAction("Dashboard");
         }
 
         try
         {
             await _emailService.SendEmailAsync(
-                model.RecipientEmail,
+                user.Email,
                 model.Subject,
                 model.Message
             );
 
-            TempData["AdminMessage"] = $"Email sent to {model.RecipientEmail}.";
+            TempData["AdminMessage"] = $"Email sent successfully to {user.Email}.";
         }
         catch (Exception ex)
         {

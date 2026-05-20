@@ -5,7 +5,7 @@ namespace KinexusMockup.Models;
 public class AdminEmailViewModel
 {
     [Required]
-    public int UserId { get; set; }
+    public string UserId { get; set; } = "";
 
     [Required]
     [EmailAddress]
