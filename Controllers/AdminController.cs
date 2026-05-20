@@ -211,4 +211,112 @@ public class AdminController : Controller
 
         return RedirectToAction("Dashboard");
     }
+
+    /// <summary>
+    /// Sends an email to every registered user with an email address.
+    /// Each recipient gets an individual email so user email addresses are not exposed to other users.
+    /// </summary>
+    /// <param name="model">The subject and message entered by the admin.</param>
+    /// <returns>Redirects to the dashboard with a success or error message.</returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendEmailToAll(AdminBulkEmailViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            TempData["AdminError"] = "Email could not be sent. Please enter a subject and message.";
+            return RedirectToAction("Dashboard");
+        }
+
+        var users = _userManager.Users
+            .Where(user => !string.IsNullOrWhiteSpace(user.Email))
+            .ToList();
+
+        if (users.Count == 0)
+        {
+            TempData["AdminError"] = "No registered users with email addresses were found.";
+            return RedirectToAction("Dashboard");
+        }
+
+        var sentCount = 0;
+        var failedResults = new List<string>();
+
+        // Due to Mailtraps rate limit, the below won't work. However it will work with a real
+        // SMTP server and should be swapped with the loop below once set up.
+        //foreach (var user in users)
+        //{
+        //    var recipientEmail = user.Email?.Trim();
+
+        //    if (string.IsNullOrWhiteSpace(recipientEmail))
+        //    {
+        //        failedResults.Add("A user had no email address.");
+        //        continue;
+        //    }
+
+        //    try
+        //    {
+        //        Console.WriteLine($"Sending bulk email to: [{recipientEmail}]");
+
+        //        await _emailService.SendEmailAsync(
+        //            recipientEmail,
+        //            model.Subject,
+        //            model.Message
+        //        );
+
+        //        sentCount++;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        failedResults.Add($"{recipientEmail}: {ex.Message}");
+        //    }
+        //}
+
+        // Replace this with the above once a real SMTP is in place.
+        for (var i = 0; i < users.Count; i++)
+        {
+            var user = users[i];
+            var recipientEmail = user.Email?.Trim();
+
+            if (string.IsNullOrWhiteSpace(recipientEmail))
+            {
+                failedResults.Add("A user had no email address.");
+                continue;
+            }
+
+            try
+            {
+                await _emailService.SendEmailAsync(
+                    recipientEmail,
+                    model.Subject,
+                    model.Message
+                );
+
+                sentCount++;
+            }
+            catch (Exception ex)
+            {
+                failedResults.Add($"{recipientEmail}: {ex.Message}");
+            }
+
+            // Mailtrap's free/testing plan can rate-limit rapid bulk sends.
+            // For the prototype, we send one email at a time with a short delay.
+            if (i < users.Count - 1)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            }
+        }
+
+        if (failedResults.Count == 0)
+        {
+            TempData["AdminMessage"] = $"Email sent successfully to all {sentCount} user(s).";
+        }
+        else
+        {
+            TempData["AdminError"] =
+                $"Email sent to {sentCount} user(s), but failed for {failedResults.Count} user(s). " +
+                $"Failed: {string.Join("; ", failedResults)}";
+        }
+
+        return RedirectToAction("Dashboard");
+    }
 }

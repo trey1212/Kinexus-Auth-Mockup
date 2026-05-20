@@ -1,5 +1,9 @@
 ﻿namespace KinexusMockup.Services.Email;
 
+/// <summary>
+/// Email Settings class for configuring the SmtpEmailService. This class is used 
+/// to bind the email settings from the appsettings.json file.
+/// </summary>
 public class EmailSettings
 {
     public string Host { get; set; } = "";

@@ -2,6 +2,9 @@
 
 namespace KinexusMockup.Models;
 
+/// <summary>
+/// For sending individual emails. Requires UserID to know which user to send the email to.
+/// </summary>
 public class AdminEmailViewModel
 {
     [Required]
