@@ -1,19 +1,21 @@
 using KinexusMockup.Data;
 using KinexusMockup.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 public class AdminController : Controller
 {
-    private readonly ApplicationDbContext _context;
 
-    public AdminController(ApplicationDbContext context)
+    private readonly UserManager<AdminMockUser> _userManager;
+
+    public AdminController(UserManager<AdminMockUser> userManager)
     {
-        _context = context;
+        _userManager = userManager;
     }
 
     public IActionResult Dashboard()
     {
-        var users = _context.Users.ToList();
+        var users = _userManager.Users.ToList();
 
         var model = new AdminDashboardViewModel
         {
@@ -25,44 +27,65 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public IActionResult UpdateUser(AdminMockUser user)
+    public async Task<IActionResult> UpdateUser(string id, string firstName, string lastName, string email)
     {
-        var dbUser = _context.Users.FirstOrDefault(x => x.Id == user.Id);
-
-        if (dbUser == null)
-            return NotFound();
-
-        dbUser.FirstName = user.FirstName;
-        dbUser.LastName = user.LastName;
-        dbUser.Email = user.Email;
-
-        _context.SaveChanges();
-
-        return RedirectToAction("Dashboard");
-    }
-
-    [HttpPost]
-    public IActionResult AddUser(AdminMockUser user)
-    {
-        user.JoinedOn = DateOnly.FromDateTime(DateTime.Now);
-
-        _context.Users.Add(user);
-        _context.SaveChanges();
-
-        return RedirectToAction("Dashboard");
-    }
-
-    [HttpPost]
-    public IActionResult DeleteUser(int id)
-    {
-        var user = _context.Users.FirstOrDefault(x => x.Id == id);
+        var user = await _userManager.FindByIdAsync(id);
 
         if (user == null)
             return NotFound();
 
-        _context.Users.Remove(user);
-        _context.SaveChanges();
+        user.FirstName = firstName;
+        user.LastName = lastName;
+        user.Email = email;
+        user.UserName = email;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
 
         return RedirectToAction("Dashboard");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddUser(string firstName, string lastName, string email, string password)
+    {
+        var user = new AdminMockUser
+        {
+            UserName = email,
+            Email = email,
+            FirstName = firstName,
+            LastName = lastName,
+            JoinedOn = DateOnly.FromDateTime(DateTime.Now)
+        };
+
+        var result = await _userManager.CreateAsync(user, password);
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return RedirectToAction("Dashboard");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+
+        if (user == null)
+            return NotFound();
+
+        var result = await _userManager.DeleteAsync(user);
+
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Dashboard");
+        }
+
+        return View();
     }
 }

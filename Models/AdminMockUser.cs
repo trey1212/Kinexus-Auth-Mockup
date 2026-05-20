@@ -1,15 +1,14 @@
 
+using Microsoft.AspNetCore.Identity;
+
 namespace KinexusMockup.Models;
 
-public class AdminMockUser
+public class AdminMockUser : IdentityUser
 {
-    public int Id { get; set; }
-
+    
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
-
-    public string Email { get; set; }
 
     public DateOnly JoinedOn { get; set; }
 

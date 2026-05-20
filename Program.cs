@@ -1,7 +1,9 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using KinexusMockup.Auth;
 using KinexusMockup.Data;
+using KinexusMockup.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +16,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseOpenIddict();
 });
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddRazorPages();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<AdminMockUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddKinexusSsoServer(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
+
+//Using dummy email sender remove later with proper one.
+builder.Services.AddSingleton<IEmailSender, DummyEmailSender>();
 
 var app = builder.Build();
 
