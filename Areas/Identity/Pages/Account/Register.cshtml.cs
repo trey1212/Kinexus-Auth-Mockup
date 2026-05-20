@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
 using KinexusMockup.Models;
+using KinexusMockup.Services.Email;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -20,21 +21,21 @@ public class RegisterModel : PageModel
     private readonly IUserStore<AdminMockUser> _userStore;
     private readonly IUserEmailStore<AdminMockUser> _emailStore;
     private readonly ILogger<RegisterModel> _logger;
-    //private readonly IEmailSender _emailSender;
+    private readonly IEmailService _emailSender;
 
     public RegisterModel(
         UserManager<AdminMockUser> userManager,
         IUserStore<AdminMockUser> userStore,
         SignInManager<AdminMockUser> signInManager,
         ILogger<RegisterModel> logger,
-        IEmailSender emailSender)
+        IEmailService emailSender)
     {
         _userManager = userManager;
         _userStore = userStore;
         _emailStore = GetEmailStore();
         _signInManager = signInManager;
         _logger = logger;
-        //_emailSender = emailSender;
+        _emailSender = emailSender;
     }
 
     [BindProperty]
@@ -80,6 +81,10 @@ public class RegisterModel : PageModel
 
         var user = CreateUser();
 
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
+        user.JoinedOn = DateOnly.FromDateTime(DateTime.UtcNow);
+
         await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
@@ -101,10 +106,10 @@ public class RegisterModel : PageModel
             if (callbackUrl is not null)
             {
                 var encodedUrl = HtmlEncoder.Default.Encode(callbackUrl);
-                //await _emailSender.SendEmailAsync(
-                //    Input.Email,
-                //    "Confirm your email",
-                //    $"Please confirm your account by <a href='{encodedUrl}'>clicking here</a>.");
+                await _emailSender.SendEmailAsync(
+                    Input.Email,
+                    "Confirm your email",
+                    $"Please confirm your account by <a href='{encodedUrl}'>clicking here</a>.");
             }
 
             if (_userManager.Options.SignIn.RequireConfirmedAccount)

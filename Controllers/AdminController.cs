@@ -29,6 +29,61 @@ public class AdminController : Controller
         return View(model);
     }
 
+    /// <summary>
+    /// Ends the session of a user based on their id.
+    /// </summary>
+    /// <param name="userId">The id of the user to have their session ended.</param>
+    /// <returns>Redirect to admin dashboard</returns>
+    [HttpPost]
+    public async Task<IActionResult> EndSession(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+            return NotFound();
+
+        await _userManager.UpdateSecurityStampAsync(user);
+
+        return RedirectToAction("Dashboard");
+    }
+
+    /// <summary>
+    /// Resets a users password based on their id.
+    /// </summary>
+    /// <param name="userId">The id of the target user.</param>
+    /// <param name="newPassword">The new password of which will become their actual password.</param>
+    /// <returns>Redirect to dashboard.</returns>
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword(string userId, string newPassword)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+            return NotFound();
+
+        var removeResult = await _userManager.RemovePasswordAsync(user);
+
+        if (!removeResult.Succeeded)
+            return BadRequest(removeResult.Errors);
+
+        var addResult = await _userManager.AddPasswordAsync(user, newPassword);
+
+        if (!addResult.Succeeded)
+            return BadRequest(addResult.Errors);
+
+        await _userManager.UpdateSecurityStampAsync(user);
+
+        return RedirectToAction("Dashboard");
+    }
+
+    /// <summary>
+    /// Updates a users info based on their id.
+    /// </summary>
+    /// <param name="id">The users id.</param>
+    /// <param name="firstName">The users new name.</param>
+    /// <param name="lastName">The users new last name</param>
+    /// <param name="email">The users new email.</param>
+    /// <returns>Redirect to dashboard.</returns>
     [HttpPost]
     public async Task<IActionResult> UpdateUser(string id, string firstName, string lastName, string email)
     {
@@ -52,6 +107,14 @@ public class AdminController : Controller
         return RedirectToAction("Dashboard");
     }
 
+    /// <summary>
+    /// Adds a user to the database.
+    /// </summary>
+    /// <param name="firstName">The users first name</param>
+    /// <param name="lastName">The users last name</param>
+    /// <param name="email">The users email</param>
+    /// <param name="password">The users password</param>
+    /// <returns>Redirect to dashboard</returns>
     [HttpPost]
     public async Task<IActionResult> AddUser(string firstName, string lastName, string email, string password)
     {
@@ -74,6 +137,11 @@ public class AdminController : Controller
         return RedirectToAction("Dashboard");
     }
 
+    /// <summary>
+    /// Deletes the user with the specified id.
+    /// </summary>
+    /// <param name="id">The unique id of the user to delete.</param>
+    /// <returns>Redirect to dashboard.</returns>
     [HttpPost]
     public async Task<IActionResult> DeleteUser(string id)
     {
@@ -104,7 +172,7 @@ public class AdminController : Controller
             return RedirectToAction("Dashboard");
         }
 
-        var user = _context.Users.FirstOrDefault(x => x.Id == model.UserId);
+        var user = _userManager.Users.FirstOrDefault(x => x.Id.Equals(model.UserId));
 
         if (user == null)
         {

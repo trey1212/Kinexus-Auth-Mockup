@@ -30,16 +30,23 @@ builder.Services.AddKinexusSsoServer(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero;
+});
+
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddTransient<IEmailService, SmtpEmailService>();
+
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+
 }
 else
 {
