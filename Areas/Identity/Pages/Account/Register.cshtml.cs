@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
+using KinexusMockup.Models;
+using KinexusMockup.Services.Email;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,19 +16,19 @@ namespace KinexusMockup.Areas.Identity.Pages.Account;
 [AllowAnonymous]
 public class RegisterModel : PageModel
 {
-    private readonly SignInManager<IdentityUser> _signInManager;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly IUserStore<IdentityUser> _userStore;
-    private readonly IUserEmailStore<IdentityUser> _emailStore;
+    private readonly SignInManager<AdminMockUser> _signInManager;
+    private readonly UserManager<AdminMockUser> _userManager;
+    private readonly IUserStore<AdminMockUser> _userStore;
+    private readonly IUserEmailStore<AdminMockUser> _emailStore;
     private readonly ILogger<RegisterModel> _logger;
-    private readonly IEmailSender _emailSender;
+    private readonly IEmailService _emailSender;
 
     public RegisterModel(
-        UserManager<IdentityUser> userManager,
-        IUserStore<IdentityUser> userStore,
-        SignInManager<IdentityUser> signInManager,
+        UserManager<AdminMockUser> userManager,
+        IUserStore<AdminMockUser> userStore,
+        SignInManager<AdminMockUser> signInManager,
         ILogger<RegisterModel> logger,
-        IEmailSender emailSender)
+        IEmailService emailSender)
     {
         _userManager = userManager;
         _userStore = userStore;
@@ -79,6 +81,10 @@ public class RegisterModel : PageModel
 
         var user = CreateUser();
 
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
+        user.JoinedOn = DateOnly.FromDateTime(DateTime.UtcNow);
+
         await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
@@ -123,27 +129,27 @@ public class RegisterModel : PageModel
         return Page();
     }
 
-    private IdentityUser CreateUser()
+    private AdminMockUser CreateUser()
     {
         try
         {
-            return Activator.CreateInstance<IdentityUser>();
+            return Activator.CreateInstance<AdminMockUser>();
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException(
-                $"Can't create an instance of '{nameof(IdentityUser)}'. Ensure that the identity user type has a parameterless constructor.",
+                $"Can't create an instance of '{nameof(AdminMockUser)}'. Ensure that the identity user type has a parameterless constructor.",
                 ex);
         }
     }
 
-    private IUserEmailStore<IdentityUser> GetEmailStore()
+    private IUserEmailStore<AdminMockUser> GetEmailStore()
     {
         if (!_userManager.SupportsUserEmail)
         {
             throw new NotSupportedException("The default UI requires a user store with email support.");
         }
 
-        return (IUserEmailStore<IdentityUser>)_userStore;
+        return (IUserEmailStore<AdminMockUser>)_userStore;
     }
 }

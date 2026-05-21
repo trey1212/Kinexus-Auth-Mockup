@@ -1,16 +1,15 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using KinexusMockup.Auth;
 using KinexusMockup.Data;
+using KinexusMockup.Models;
 using KinexusMockup.Services;
+using KinexusMockup.Services.Email;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Per-developer overrides for secrets and machine-specific values.
-// appsettings.Local.json is gitignored; teammates copy appsettings.Local.example.json,
-// rename it, and fill in real values. In production, the same keys are supplied
-// as Azure App Service Application Settings (env vars with __ in place of :).
+// appsettings.Local.json is gitignored.
 builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -21,20 +20,38 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString);
     options.UseOpenIddict();
 });
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddRazorPages();
+
+builder.Services.AddIdentity<AdminMockUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
 builder.Services.AddKinexusSsoServer(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<HomeContentService>();
+
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero;
+});
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+
+builder.Services.AddTransient<IEmailService, SmtpEmailService>();
 
 var app = builder.Build();
 
@@ -48,8 +65,10 @@ else
     app.UseHsts();
 }
 
-// Intentionally off: SSO clients may be deployed over HTTP. Re-enable once all clients are HTTPS-only.
+// Intentionally off: SSO clients may be deployed over HTTP.
+// Re-enable once all clients are HTTPS-only.
 // app.UseHttpsRedirection();
+
 app.UseRouting();
 app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage");
 
