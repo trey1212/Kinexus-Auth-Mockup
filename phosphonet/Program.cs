@@ -62,7 +62,8 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    //Uncomment this command to force HTTPS
+    //app.UseHsts();
 }
 
 // Intentionally off: SSO clients may be deployed over HTTP.
