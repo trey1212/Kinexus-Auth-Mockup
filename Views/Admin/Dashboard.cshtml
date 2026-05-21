@@ -79,6 +79,7 @@
                         <th scope="col">First Name</th>
                         <th scope="col">Last Name</th>
                         <th scope="col">Email</th>
+                        <th scope="col">Role</th>
                         <th scope="col">Joined</th>
                         <th scope="col">Actions</th>
                     </tr>
@@ -86,10 +87,23 @@
                 <tbody>
                     @foreach (var user in Model.Users)
                     {
+                        var adminUserIds = ViewBag.AdminUserIds as HashSet<string> ?? new HashSet<string>();
+                        var isAdmin = adminUserIds.Contains(user.Id);
+
                         <tr>
                             <td>@user.FirstName</td>
                             <td>@user.LastName</td>
                             <td>@user.Email</td>
+                            <td>
+                                @if (isAdmin)
+                                {
+                                    <span class="badge bg-success">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">User</span>
+                                }
+                            </td>
                             <td>@user.JoinedOn.ToString("MMM dd, yyyy")</td>
 
                             <td>
@@ -137,6 +151,39 @@
                                             data-bs-target="#endSessionModal-@user.Id">
                                         End Session
                                     </button>
+
+                                    @if (isAdmin)
+                                    {
+                                        <form method="post"
+                                              asp-controller="Admin"
+                                              asp-action="RemoveAdmin"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userId" value="@user.Id" />
+
+                                            <button type="submit"
+                                                    class="btn admin-table__button admin-table__button--reset"
+                                                    onclick="return confirm('Remove admin role from @user.Email?');">
+                                                Remove Admin
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post"
+                                              asp-controller="Admin"
+                                              asp-action="MakeAdmin"
+                                              style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userId" value="@user.Id" />
+
+                                            <button type="submit"
+                                                    class="btn admin-table__button admin-table__button--edit"
+                                                    onclick="return confirm('Make @user.Email an admin?');">
+                                                Make Admin
+                                            </button>
+                                        </form>
+                                    }
 
                                 </div>
                             </td>

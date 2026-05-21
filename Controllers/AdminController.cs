@@ -7,21 +7,37 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KinexusMockup.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 public class AdminController : Controller
 {
     private readonly IEmailService _emailService;
     private readonly UserManager<AdminMockUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AdminController(UserManager<AdminMockUser> userManager, IEmailService emailService)
+    public AdminController(
+        UserManager<AdminMockUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IEmailService emailService)
     {
         _emailService = emailService;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
-    public IActionResult Dashboard()
+    public async Task<IActionResult> Dashboard()
     {
         var users = _userManager.Users.ToList();
+        var adminUserIds = new HashSet<string>();
+
+        foreach (var user in users)
+        {
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                adminUserIds.Add(user.Id);
+            }
+        }
+
+        ViewBag.AdminUserIds = adminUserIds;
 
         var model = new AdminDashboardViewModel
         {
@@ -30,6 +46,69 @@ public class AdminController : Controller
         };
 
         return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MakeAdmin(string userId)
+    {
+        const string adminRole = "Admin";
+
+        if (!await _roleManager.RoleExistsAsync(adminRole))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(adminRole));
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            TempData["AdminError"] = "User could not be found.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        if (!await _userManager.IsInRoleAsync(user, adminRole))
+        {
+            var result = await _userManager.AddToRoleAsync(user, adminRole);
+
+            if (!result.Succeeded)
+            {
+                TempData["AdminError"] = "User could not be promoted to admin.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+        }
+
+        TempData["AdminMessage"] = $"{user.Email} is now an admin.";
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveAdmin(string userId)
+    {
+        const string adminRole = "Admin";
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            TempData["AdminError"] = "User could not be found.";
+            return RedirectToAction(nameof(Dashboard));
+        }
+
+        if (await _userManager.IsInRoleAsync(user, adminRole))
+        {
+            var result = await _userManager.RemoveFromRoleAsync(user, adminRole);
+
+            if (!result.Succeeded)
+            {
+                TempData["AdminError"] = "Admin role could not be removed.";
+                return RedirectToAction(nameof(Dashboard));
+            }
+        }
+
+        TempData["AdminMessage"] = $"{user.Email} is no longer an admin.";
+        return RedirectToAction(nameof(Dashboard));
     }
 
     /// <summary>
