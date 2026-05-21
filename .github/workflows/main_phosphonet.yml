@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_PATH: 'phosphonet/KinexusMockup/KinexusMockup.csproj'
+  PROJECT_PATH: 'phosphonet/KinexusMockup.csproj'
 
 jobs:
   build:
