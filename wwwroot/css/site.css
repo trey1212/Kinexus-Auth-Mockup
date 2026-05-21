@@ -236,7 +236,6 @@ a {
     .services-cards {
         grid-template-columns: 1fr;
     }
-
     .services-grid .card {
         padding-left: 2rem;
         padding-right: 2rem;
