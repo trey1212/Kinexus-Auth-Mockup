@@ -67,7 +67,7 @@ else
 
 // Intentionally off: SSO clients may be deployed over HTTP.
 // Re-enable once all clients are HTTPS-only.
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage");
