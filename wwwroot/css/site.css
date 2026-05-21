@@ -231,6 +231,18 @@ a {
     gap: 1rem;
 }
 
+/* Mobile services cards */
+@media (max-width: 768px) {
+    .services-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .services-grid .card {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
 .services-grid .card {
     padding-right: 180px;
     padding-left: 180px;
