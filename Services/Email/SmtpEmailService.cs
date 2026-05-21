@@ -38,9 +38,13 @@ public class SmtpEmailService : IEmailService
     /// <returns>A task that represents the asynchronous send operation.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="toEmail"/>, <paramref name="subject"/>, or <paramref name="message"/> is null, empty,
     /// or consists only of white-space characters.</exception>
-    public async Task SendEmailAsync(string toEmail, string subject, string message)
+    public async Task SendEmailAsync(
+    string toEmail,
+    string subject,
+    string message,
+    EmailAttachment? attachment = null)
     {
-        //toEmail = toEmail.Trim();
+        toEmail = toEmail.Trim();
 
         if (string.IsNullOrWhiteSpace(toEmail))
         {
@@ -60,13 +64,24 @@ public class SmtpEmailService : IEmailService
         var email = new MimeMessage();
 
         email.From.Add(new MailboxAddress(_settings.FromName, _settings.FromEmail));
-        email.To.Add(MailboxAddress.Parse(toEmail.Trim()));
+        email.To.Add(MailboxAddress.Parse(toEmail));
         email.Subject = subject;
 
-        email.Body = new TextPart("plain")
+        var bodyBuilder = new BodyBuilder
         {
-            Text = message
+            TextBody = message
         };
+
+        if (attachment != null)
+        {
+            bodyBuilder.Attachments.Add(
+                attachment.FileName,
+                attachment.Content,
+                ContentType.Parse(attachment.ContentType)
+            );
+        }
+
+        email.Body = bodyBuilder.ToMessageBody();
 
         using var smtp = new SmtpClient();
 

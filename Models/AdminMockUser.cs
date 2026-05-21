@@ -11,6 +11,4 @@ public class AdminMockUser : IdentityUser
     public string LastName { get; set; }
 
     public DateOnly JoinedOn { get; set; }
-
-    
 }

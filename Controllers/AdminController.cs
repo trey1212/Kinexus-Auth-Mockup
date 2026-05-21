@@ -196,13 +196,18 @@ public class AdminController : Controller
 
         try
         {
+            var attachment = await BuildImageAttachmentAsync(model.ImageAttachment);
+
             await _emailService.SendEmailAsync(
-                user.Email,
+                user.Email!,
                 model.Subject,
-                model.Message
+                model.Message,
+                attachment
             );
 
-            TempData["AdminMessage"] = $"Email sent successfully to {user.Email}.";
+            TempData["AdminMessage"] = attachment == null
+                ? $"Email sent successfully to {user.Email}."
+                : $"Email with image sent successfully to {user.Email}.";
         }
         catch (Exception ex)
         {
@@ -222,6 +227,18 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendEmailToAll(AdminBulkEmailViewModel model)
     {
+        EmailAttachment? attachment;
+
+        try
+        {
+            attachment = await BuildImageAttachmentAsync(model.ImageAttachment);
+        }
+        catch (Exception ex)
+        {
+            TempData["AdminError"] = $"Email image could not be attached: {ex.Message}";
+            return RedirectToAction("Dashboard");
+        }
+
         if (!ModelState.IsValid)
         {
             TempData["AdminError"] = "Email could not be sent. Please enter a subject and message.";
@@ -288,7 +305,8 @@ public class AdminController : Controller
                 await _emailService.SendEmailAsync(
                     recipientEmail,
                     model.Subject,
-                    model.Message
+                    model.Message,
+                    attachment
                 );
 
                 sentCount++;
@@ -308,7 +326,9 @@ public class AdminController : Controller
 
         if (failedResults.Count == 0)
         {
-            TempData["AdminMessage"] = $"Email sent successfully to all {sentCount} user(s).";
+            TempData["AdminMessage"] = attachment == null
+                ? $"Email sent successfully to all {sentCount} user(s)."
+                : $"Email with image sent successfully to all {sentCount} user(s).";
         }
         else
         {
@@ -318,5 +338,42 @@ public class AdminController : Controller
         }
 
         return RedirectToAction("Dashboard");
+    }
+
+    private static async Task<EmailAttachment?> BuildImageAttachmentAsync(IFormFile? imageFile)
+    {
+        if (imageFile == null || imageFile.Length == 0)
+        {
+            return null;
+        }
+
+        const long maxImageSizeBytes = 2 * 1024 * 1024;
+
+        var allowedContentTypes = new HashSet<string>
+    {
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/webp"
+    };
+
+        if (imageFile.Length > maxImageSizeBytes)
+        {
+            throw new InvalidOperationException("Image must be 2 MB or smaller.");
+        }
+
+        if (!allowedContentTypes.Contains(imageFile.ContentType.ToLowerInvariant()))
+        {
+            throw new InvalidOperationException("Only JPG, PNG, GIF, or WebP images can be attached.");
+        }
+
+        await using var memoryStream = new MemoryStream();
+        await imageFile.CopyToAsync(memoryStream);
+
+        return new EmailAttachment(
+            Path.GetFileName(imageFile.FileName),
+            imageFile.ContentType,
+            memoryStream.ToArray()
+        );
     }
 }

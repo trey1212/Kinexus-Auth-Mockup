@@ -152,7 +152,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content admin-modal">
 
-            <form asp-controller="Admin" asp-action="SendEmailToAll" method="post">
+            <form asp-controller="Admin" asp-action="SendEmailToAll" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
 
                 <div class="modal-header admin-modal__header">
@@ -187,6 +187,14 @@
                                   rows="7"
                                   placeholder="Write your newsletter content here..."
                                   required></textarea>
+                    </div>
+                    <div>
+                        <label class="form-label admin-modal__label">Optional image attachment</label>
+                        <input class="form-control admin-input"
+                               name="ImageAttachment"
+                               type="file"
+                               accept="image/png,image/jpeg,image/gif,image/webp" />
+                        <small class="text-muted">The selected image will be attached to each user email. Max size: 2 MB.</small>
                     </div>
                 </div>
 
@@ -430,7 +438,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form asp-controller="Admin" asp-action="SendEmail" method="post">
+                <form asp-controller="Admin" asp-action="SendEmail" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <div class="modal-body admin-modal__body">
                         <input type="hidden" name="UserId" value="@user.Id" />
@@ -448,6 +456,14 @@
                         <div>
                             <label class="form-label admin-modal__label">Message</label>
                             <textarea class="form-control admin-textarea" name="Message" rows="7" placeholder="Write your custom message here..." required></textarea>
+                        </div>
+                        <div>
+                            <label class="form-label admin-modal__label">Optional image attachment</label>
+                            <input class="form-control admin-input"
+                                   name="ImageAttachment"
+                                   type="file"
+                                   accept="image/png,image/jpeg,image/gif,image/webp" />
+                            <small class="text-muted">Accepted: JPG, PNG, GIF, WebP. Max size: 2 MB.</small>
                         </div>
                     </div>
 

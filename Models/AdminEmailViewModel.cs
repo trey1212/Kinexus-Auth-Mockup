@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace KinexusMockup.Models;
 
@@ -21,4 +22,6 @@ public class AdminEmailViewModel
     [Required]
     [StringLength(2000)]
     public string Message { get; set; } = "";
+
+    public IFormFile? ImageAttachment { get; set; }
 }
