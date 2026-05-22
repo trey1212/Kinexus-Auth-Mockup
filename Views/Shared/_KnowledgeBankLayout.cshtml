@@ -1,3 +1,10 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@{
+    // PhosphoNET lives in its own app (the Phosphonet site). The link in the
+    // navbar jumps over there instead of routing to a local KnowledgebankController
+    // action. Configurable via Phosphonet:PublicUrl (env var Phosphonet__PublicUrl).
+    var phosphonetUrl = (Configuration["Phosphonet:PublicUrl"] ?? "http://localhost:5200").TrimEnd('/');
+}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -57,9 +64,16 @@
                             if (link.Key != currentPage)
                             {
                                 <li>
-                                    <a class="nav-link" asp-controller="@link.Value.Controller" asp-action="@link.Key">
-                                        @link.Value.Text
-                                    </a>
+                                    @if (link.Key == "PhosphoNet")
+                                    {
+                                        <a class="nav-link" href="@($"{phosphonetUrl}/PhosphoNet")">@link.Value.Text</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="nav-link" asp-controller="@link.Value.Controller" asp-action="@link.Key">
+                                            @link.Value.Text
+                                        </a>
+                                    }
                                 </li>
                             }
                         }

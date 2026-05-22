@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using KinexusMockup.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -10,8 +11,8 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace KinexusMockup.Controllers;
 
 public class AuthorizationController(
-    SignInManager<IdentityUser> signInManager,
-    UserManager<IdentityUser> userManager) : Controller
+    SignInManager<AdminMockUser> signInManager,
+    UserManager<AdminMockUser> userManager) : Controller
 {
 
     // The entry point. Another app sends the user here when it wants them logged in.
@@ -145,7 +146,7 @@ public class AuthorizationController(
     }
 
 
-    private async Task<ClaimsPrincipal> BuildPrincipalAsync(IdentityUser user, IEnumerable<string> requestedScopes)
+    private async Task<ClaimsPrincipal> BuildPrincipalAsync(AdminMockUser user, IEnumerable<string> requestedScopes)
     {
         var principal = await signInManager.CreateUserPrincipalAsync(user);
 
