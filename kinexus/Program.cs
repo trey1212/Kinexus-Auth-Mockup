@@ -20,10 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     // Comment out respective SQL connection type
     // Local: Sqlite | Azure: SqlServer
     // options.UseSqlite(connectionString);
-    options.UseSqlServer(connectionString, sqlOptions => 
-    {
-        sqlOptions.EnableRetryOnFailure();
-    });
+    options.UseSqlServer(connectionString);
     options.UseOpenIddict();
 });
 
