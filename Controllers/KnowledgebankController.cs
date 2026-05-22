@@ -20,4 +20,15 @@ public class KnowledgebankController : Controller
     public IActionResult KinetAM() => View();
     public IActionResult Kinector() => View();
     public IActionResult Signet() => View();
+
+    // Checks which credits page to render and render the respective one
+    public IActionResult Credits(string projectName)
+    {
+        if (string.IsNullOrEmpty(projectName) || projectName == "Index")
+        {
+            return View("DefaultCredits"); 
+        }
+
+        return View($"{projectName}Credits"); 
+    }
 }
