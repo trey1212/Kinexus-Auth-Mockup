@@ -1,11 +1,20 @@
 ﻿@model HomeViewModel;
 @{
     ViewData["Title"] = "Home Page";
+    var isAuthed = User?.Identity?.IsAuthenticated == true;
+    var userName = isAuthed ? User!.Identity!.Name : null;
 }
 
 <section class="hero">
     <div class="hero-content">
-        <h1>Welcome</h1>
+        @if (isAuthed)
+        {
+            <h1>Welcome, @userName</h1>
+        }
+        else
+        {
+            <h1>Welcome</h1>
+        }
         <p>@Model.WelcomeMessage</p>
     </div>
     

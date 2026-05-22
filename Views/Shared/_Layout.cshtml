@@ -24,8 +24,15 @@
         </nav>
 
         <nav class="auth-nav">
-            <a asp-area="Identity" asp-page="/Account/Login">Sign-in</a>
-            <a class="sign-up" asp-area="Identity" asp-page="/Account/Register">Sign-up</a>
+            @if (User?.Identity?.IsAuthenticated == true)
+            {
+                <a class="sign-up" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">Logout</a>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">Sign-in</a>
+                <a class="sign-up" asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">Sign-up</a>
+            }
         </nav>
     </header>
 

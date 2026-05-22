@@ -1,9 +1,16 @@
-@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject Microsoft.Extensions.Options.IOptions<KinexusMockup.Auth.SsoOptions> SsoOptions
 @{
-    // PhosphoNET lives in its own app (the Phosphonet site). The link in the
-    // navbar jumps over there instead of routing to a local KnowledgebankController
-    // action. Configurable via Phosphonet:PublicUrl (env var Phosphonet__PublicUrl).
-    var phosphonetUrl = (Configuration["Phosphonet:PublicUrl"] ?? "http://localhost:5200").TrimEnd('/');
+    // PhosphoNET lives in its own app. The link in the navbar jumps over there
+    // instead of routing to a local KnowledgebankController action. URL comes
+    // from SsoOptions (env-var overridable via Sso__PhosphonetPublicUrl).
+    var phosphonetUrl = SsoOptions.Value.PhosphonetBase;
+
+    // When the user is not logged in, every Knowledgebank page renders the
+    // welcome partial instead of its own content. Once signed in, the layout
+    // falls back to @RenderBody() and the actual page shows.
+    var isAuthed = User?.Identity?.IsAuthenticated == true;
+    var userName = isAuthed ? User!.Identity!.Name : null;
+    var currentPath = Context.Request.Path + Context.Request.QueryString;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -14,6 +21,7 @@
         <script type="importmap"></script>
 
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/knowledgebase.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/KinexusMockup.styles.css" asp-append-version="true" />
         
         <!-- Overrides default styles to change the body directly -->
@@ -66,7 +74,15 @@
                                 <li>
                                     @if (link.Key == "PhosphoNet")
                                     {
-                                        <a class="nav-link" href="@($"{phosphonetUrl}/PhosphoNet")">@link.Value.Text</a>
+                                        @* SSO bridge: when this user has a Kinexus cookie, route through
+                                           Phosphonet's /Account/Login so an OIDC challenge fires. Phosphonet
+                                           bounces to Kinexus /connect/authorize, which already sees the
+                                           cookie and silently issues the auth code — no second login UI.
+                                           Unauthed users go direct to /PhosphoNet and see the welcome page. *@
+                                        var phosphoHref = isAuthed
+                                            ? $"{phosphonetUrl}/Account/Login?returnUrl=%2FPhosphoNet"
+                                            : $"{phosphonetUrl}/PhosphoNet";
+                                        <a class="nav-link" href="@phosphoHref">@link.Value.Text</a>
                                     }
                                     else
                                     {
@@ -83,6 +99,10 @@
                 <div class="sub-navbar">
 
                     <div class="extra-links">
+                        @if (isAuthed)
+                        {
+                            <span>Signed in as <strong>@userName</strong></span>
+                        }
                         @await RenderSectionAsync("ExtraLinks", required: false)
                     </div>
 
@@ -91,13 +111,29 @@
                         <a asp-controller="Home" asp-action="Index">Kinexus</a>
                         <a href="#">Contact</a>
                         <a href="#">Credits</a>
+                        @if (isAuthed)
+                        {
+                            <a asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@currentPath">Log out</a>
+                        }
+                        else
+                        {
+                            <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@currentPath">Log in</a>
+                        }
                     </div>
 
                 </div>
             </header>
 
             <main role="main">
-                @RenderBody()
+                @if (isAuthed)
+                {
+                    @RenderBody()
+                }
+                else
+                {
+                    IgnoreBody();
+                    @await Html.PartialAsync("_KnowledgebankWelcome")
+                }
             </main>
         </div>
     </body>

@@ -69,7 +69,8 @@
     color: #2baf4f;
 }
 
-::deep .sub-navbar .main-links a:not(:last-child)::after {
+::deep .sub-navbar .main-links a:not(:last-child)::after,
+::deep .sub-navbar .main-links .logout-form:not(:last-child)::after {
     content: "|";
     color: #ffbc0d;
     margin-left: 10px;
@@ -77,5 +78,27 @@
     font-weight: normal;
     cursor: default;
     display: inline-block;
+}
+
+::deep .sub-navbar .logout-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+::deep .sub-navbar .logout-link {
+    background: none;
+    border: none;
+    color: #ffbc0d;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+::deep .sub-navbar .logout-link:hover {
+    color: #77529F;
 }
 

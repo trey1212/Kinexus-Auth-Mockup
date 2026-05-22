@@ -1,0 +1,27 @@
+/*
+ * Shared layout for the Knowledgebank page bodies.
+ *
+ * Each view's content lives inside a <div class="content"> with:
+ *   - <h1> for the yellow/bold section headings (lines marked with *** in the
+ *     source docs)
+ *   - <p>  for the descriptive paragraphs
+ *
+ * Kept in one stylesheet so every page renders identically and a styling
+ * change is a one-file edit rather than ten.
+ */
+
+.content {
+    padding: 10px 100px 0 100px;
+    border-left: solid 1px #6d4891;
+}
+
+.content h1 {
+    font-size: 17px;
+    font-weight: bold;
+    color: #f7bb19;
+}
+
+.content p {
+    font-size: 15px;
+    line-height: 14pt;
+}

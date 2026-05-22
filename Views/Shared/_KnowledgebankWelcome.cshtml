@@ -1,18 +1,11 @@
-@{
-    Layout = "~/Views/Shared/_KnowledgebankLayout.cshtml";
-    ViewData["Title"] = "SigNET";
-    ViewData["Banner"] = "/img/signet-banner.jpg";
-}
+@*
+    Welcome / SigNET content shown on every Knowledgebank page when the user
+    is NOT yet logged in. Once they sign in, the layout falls back to
+    @RenderBody() and they see the actual page content.
 
-@section ExtraLinks{
-    <a asp-area="Identity" asp-page="/Account/Login">Login</a>
-}
-
+    Kept here (in Views/Shared) so all Knowledgebank views share one copy.
+*@
 <div class="signet-container">
-    <div class="auth-section">
-        <button id="scrollToTop" title="Scroll to top">Home | Top</button>
-    </div>
-
     <div class="info-section">
         <div class="welcome-section">
             <div class="welcome-top">
@@ -77,22 +70,10 @@
             <span class="highlight">KiNET-AM</span> features over 2000 antibody microarray
             analyses with over 2,000 diverse biological specimens with 1,700 diverse pan-
             and phosphosite-specific antibodies. Most of these antibodies are available
-            from Kinexus for screening lysates from cells and tissues using our Kinex™
+            from Kinexus for screening lysates from cells and tissues using our Kinex&trade;
             KAM antibody microarrays or as stand-alone products at our
             <a href="https://kinexus-ca.myshopify.com/">https://kinexus-ca.myshopify.com/</a>
             website.
         </p>
     </div>
 </div>
-
-<!-- Script to make Home | Top button to scroll to top -->
-<script>
-    let topButton = document.getElementById("scrollToTop");
-
-    topButton.addEventListener("click", function() {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    });
-</script>

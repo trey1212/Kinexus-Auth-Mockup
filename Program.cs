@@ -15,9 +15,24 @@ builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, relo
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// Pick the EF provider from the connection string shape. Local dev hits a
+// SQLite file ("DataSource=app.db"); Azure SQL connection strings include
+// "Server=" and a database name. Detect once at startup so deployment doesn't
+// need a code change — just a different connection string.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlite(connectionString);
+    var isSqlite = connectionString.Contains("DataSource=", StringComparison.OrdinalIgnoreCase)
+                || connectionString.Contains("Data Source=", StringComparison.OrdinalIgnoreCase) && connectionString.Contains(".db", StringComparison.OrdinalIgnoreCase);
+
+    if (isSqlite)
+    {
+        options.UseSqlite(connectionString);
+    }
+    else
+    {
+        options.UseSqlServer(connectionString);
+    }
+
     options.UseOpenIddict();
 });
 
@@ -38,7 +53,16 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
-builder.Services.AddKinexusSsoServer(builder.Configuration);
+// Operational peer URLs (used by the UI for the PhosphoNet nav link and the
+// single-logout chain). Distinct from the OIDC client list, which is consumed
+// by the seeder and lives under "OpenIddict" in config. Defaults live in
+// appsettings.Development.json so bare `dotnet run` works locally; env vars
+// (Sso__PublicUrl, Sso__PhosphonetPublicUrl) override for deployments.
+builder.Services
+    .AddOptions<SsoOptions>()
+    .Bind(builder.Configuration.GetSection(SsoOptions.SectionName));
+
+builder.Services.AddKinexusSsoServer(builder.Configuration, builder.Environment);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<HomeContentService>();
@@ -65,9 +89,13 @@ else
     app.UseHsts();
 }
 
-// Intentionally off: SSO clients may be deployed over HTTP.
-// Re-enable once all clients are HTTPS-only.
-// app.UseHttpsRedirection();
+// Force HTTPS everywhere except local development. Dev needs to be reachable
+// over plain HTTP for the HTTP-client demo (Phosphonet) so we leave that
+// alone; production traffic must always be encrypted.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseRouting();
 app.UseStatusCodePagesWithReExecute("/Home/NotFoundPage");

@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KinexusMockup.Controllers;
 
-// [Authorize] on the whole controller means EVERY action below requires
-// a logged-in user. If someone hits any of these URLs without being signed
-// in, they'll be sent to the login page first and bounced back after.
-[Authorize]
+// No [Authorize] here on purpose: unauthenticated users land on every
+// Knowledgebank page and see the welcome / SigNET content (rendered by the
+// shared layout via _KnowledgebankWelcome.cshtml). Once they sign in, the
+// layout falls back to @RenderBody() and the actual page content shows up.
 [Route("[action]")]
 public class KnowledgebankController : Controller
 {

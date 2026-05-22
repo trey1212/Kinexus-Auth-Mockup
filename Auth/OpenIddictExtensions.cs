@@ -1,23 +1,25 @@
+using System.Security.Cryptography.X509Certificates;
 using KinexusMockup.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
+using OpenIddict.Server;
 
 namespace KinexusMockup.Auth;
 
-// This file is the "setup" for our login server.
-//
-// Every line of OpenIddict configuration lives here so Program.cs can stay tidy —
-// it just calls AddKinexusSsoServer() and walks away. When we later want to add
-// things like refresh tokens, multi-factor auth, or a real signing certificate,
-// we change them here and nothing else needs to move.
-
-
+/// <summary>
+/// Wires OpenIddict — the OAuth 2.0 / OpenID Connect engine — into the
+/// application. Lives in its own file so <c>Program.cs</c> stays a one-screen
+/// bootstrap and so adding things like refresh tokens, MFA, or production
+/// certificates is a single-file edit.
+/// </summary>
 public static class OpenIddictExtensions
 {
-    public static IServiceCollection AddKinexusSsoServer(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddKinexusSsoServer(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment environment)
     {
-        // Read the "OpenIddict" section from appsettings.json 
         services.Configure<OpenIddictOptions>(configuration.GetSection(OpenIddictOptions.SectionName));
 
         services.Configure<IdentityOptions>(options =>
@@ -29,22 +31,21 @@ public static class OpenIddictExtensions
 
         services.AddOpenIddict()
 
-            // CORE: the part that knows how to save and load registered apps,
-            // login grants, and tokens. 
+            // CORE — storage layer. Reads/writes registered clients, grants,
+            // and tokens through Entity Framework against ApplicationDbContext.
             .AddCore(options =>
             {
                 options.UseEntityFrameworkCore()
                        .UseDbContext<ApplicationDbContext>();
             })
 
-            // SERVER: the part that hands out tokens. 
+            // SERVER — the four endpoints relying parties talk to:
+            //   /connect/authorize  — "please log this user in"
+            //   /connect/token      — "trade this code for a real token"
+            //   /connect/logout     — "log this user out"
+            //   /connect/userinfo   — "who is the user holding this token?"
             .AddServer(options =>
             {
-                // These are the four URLs other apps will talk to.
-                // /connect/authorize  -> "please log this user in"
-                // /connect/token      -> "trade this code for a real token"
-                // /connect/logout     -> "log this user out"
-                // /connect/userinfo   -> "who is the user holding this token?"
                 options.SetAuthorizationEndpointUris("/connect/authorize")
                        .SetTokenEndpointUris("/connect/token")
                        .SetEndSessionEndpointUris("/connect/logout")
@@ -53,12 +54,6 @@ public static class OpenIddictExtensions
                 options.AllowAuthorizationCodeFlow()
                        .RequireProofKeyForCodeExchange();
 
-                // The kinds of info an app is allowed to ask for:
-                //   openid          -> "I want to log a user in"  (required)
-                //   profile         -> their name / username
-                //   email           -> their email
-                //   roles           -> their roles (admin, user, etc.)
-                //   offline_access  -> permission to use refresh tokens later
                 options.RegisterScopes(
                     OpenIddictConstants.Scopes.OpenId,
                     OpenIddictConstants.Scopes.Profile,
@@ -66,27 +61,80 @@ public static class OpenIddictExtensions
                     OpenIddictConstants.Scopes.Roles,
                     OpenIddictConstants.Scopes.OfflineAccess);
 
-                options.AddDevelopmentEncryptionCertificate()
-                       .AddDevelopmentSigningCertificate();
+                // Signing + encryption certificates.
+                //   Dev  → ephemeral certs generated on each startup (tokens are
+                //          invalidated when the process restarts; fine locally).
+                //   Prod → real X.509 certs loaded from disk so tokens survive
+                //          restarts and can be rotated independently. Paths and
+                //          password come from the "Auth:Certificates" config
+                //          section, which Azure App Service can override via
+                //          environment variables / Key Vault references.
+                ConfigureCertificates(options, configuration, environment);
 
-                options.UseAspNetCore()
-                       .DisableTransportSecurityRequirement()
-                       .EnableAuthorizationEndpointPassthrough()
-                       .EnableTokenEndpointPassthrough()
-                       .EnableEndSessionEndpointPassthrough()
-                       .EnableUserInfoEndpointPassthrough();
+                var aspNetOptions = options.UseAspNetCore()
+                    .EnableAuthorizationEndpointPassthrough()
+                    .EnableTokenEndpointPassthrough()
+                    .EnableEndSessionEndpointPassthrough()
+                    .EnableUserInfoEndpointPassthrough();
+
+                // Only relax the HTTPS requirement locally — production must
+                // enforce TLS so tokens never travel over plain HTTP.
+                if (environment.IsDevelopment())
+                {
+                    aspNetOptions.DisableTransportSecurityRequirement();
+                }
             })
 
+            // VALIDATION — used when this server later validates its own
+            // tokens (e.g. on /connect/userinfo).
             .AddValidation(options =>
             {
                 options.UseLocalServer();
                 options.UseAspNetCore();
             });
 
-        // Register the seeder so it runs once on startup and writes our configured
-        // client apps into the database. See OpenIddictClientSeeder.cs.
         services.AddHostedService<OpenIddictClientSeeder>();
 
         return services;
+    }
+
+    /// <summary>
+    /// Either loads real X.509 certificates from disk (Production) or asks
+    /// OpenIddict to generate ephemeral dev certs in-process (Development).
+    /// </summary>
+    private static void ConfigureCertificates(
+        OpenIddictServerBuilder options,
+        IConfiguration configuration,
+        IWebHostEnvironment environment)
+    {
+        var signingPath = configuration["Auth:Certificates:SigningPath"];
+        var encryptionPath = configuration["Auth:Certificates:EncryptionPath"];
+        var password = configuration["Auth:Certificates:Password"];
+
+        var canUseRealCerts =
+            !string.IsNullOrWhiteSpace(signingPath) &&
+            !string.IsNullOrWhiteSpace(encryptionPath) &&
+            File.Exists(signingPath) &&
+            File.Exists(encryptionPath);
+
+        if (canUseRealCerts)
+        {
+            options.AddSigningCertificate(new X509Certificate2(signingPath!, password));
+            options.AddEncryptionCertificate(new X509Certificate2(encryptionPath!, password));
+            return;
+        }
+
+        if (!environment.IsDevelopment())
+        {
+            // Production with no certs configured is a deployment mistake we
+            // want to surface loudly, not silently fall back to dev certs.
+            throw new InvalidOperationException(
+                "Production requires real X.509 signing + encryption certificates. " +
+                "Set Auth:Certificates:SigningPath, Auth:Certificates:EncryptionPath, " +
+                "and Auth:Certificates:Password (or the equivalent env vars / Key Vault refs).");
+        }
+
+        options.AddDevelopmentEncryptionCertificate()
+               .AddDevelopmentSigningCertificate();
     }
 }
